@@ -21,9 +21,9 @@
 
 ## Enable True/False To Use: #######################
 ####################################################
-## STRICT_ALIASING := true/false
-## ENABLE_PFTC_IPA := true/false
-## ENABLE_PFTC_OPENMP := true/false
+STRICT_ALIASING := true
+ENABLE_PFTC_IPA := true
+ENABLE_PFTC_OPENMP := false
 ## ENABLE_PFTC_LTO := true/false
 ###################################################
 
@@ -219,7 +219,7 @@ endif
 #################
 
 # Polly flags for use with Clang
- POLLY := -O3 -mllvm -polly \
+# POLLY := -O3 -mllvm \
 #  -mllvm -polly-parallel -lgomp \
   -mllvm -polly-ast-use-context \
   -mllvm -polly-vectorizer=stripmine \
@@ -257,18 +257,18 @@ DISABLE_POLLY := \
 
 # Set POLLY based on DISABLE_POLLY
 ifeq (1,$(words $(filter $(DISABLE_POLLY),$(LOCAL_MODULE))))
-  POLLY := -O3
+#  POLLY := -O3
 endif
 
 # Set POLLY based on BLUETOOTH
 ifeq (1,$(words $(filter $(BLUETOOTH),$(LOCAL_MODULE))))
-  POLLY := -Os
+#  POLLY := -Os
 endif
 
 # Set POLLY based on DISABLE_POLLY
 ifeq ($(my_32_64_bit_suffix),32)
   ifeq (1,$(words $(filter $(DISABLE_POLLY_arm64_32),$(LOCAL_MODULE))))
-    POLLY := -O3
+#    POLLY := -O3
   endif
 endif
 
@@ -278,7 +278,7 @@ ifeq ($(my_clang),true)
     # size and to prevent issues with locally set optimizations.
     my_cflags := $(filter-out -Wall -Werror -g -O3 -O2 -Os -O1 -O0 -Og -Oz -Wextra -Weverything,$(my_cflags))
     # Enable -O3 and Polly if not blacklisted, otherwise use -Os.
-    my_cflags += $(POLLY) -Qunused-arguments -Wno-unknown-warning-option -w -fuse-ld=gold
+    my_cflags += -w
     my_ldflags += -fuse-ld=gold
   endif
 endif
@@ -299,7 +299,6 @@ ifeq ($(my_sdclang), true)
       # Enable POLLY only on clang
       ifneq ($(LOCAL_CLANG),false)
         my_cflags += $(POLLY)
-        my_cflags += -Qunused-arguments
       endif
     endif
   endif
